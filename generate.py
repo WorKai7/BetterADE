@@ -168,16 +168,35 @@ def convert_datetime(dt):
 # ============================================================
 
 def parse_ical():
-
+    from zoneinfo import ZoneInfo
+    
     print("Lecture du calendrier...")
 
     with open(ICAL_FILE, "rb") as file:
         calendar = Calendar.from_ical(file.read())
 
     events = []
+    
+    last_update = calendar.get("DTSTAMP")
+    last_modified = None
 
     for component in calendar.walk("VEVENT"):
+        
+        modified = component.get("LAST-MODIFIED")
+        
+        if modified:
+            modified = modified.dt
 
+            if last_modified is None or modified > last_modified:
+                last_modified = modified
+        
+        if last_modified:
+            last_update = last_modified.astimezone(
+                ZoneInfo("Europe/Paris")
+            ).strftime("%d/%m/%Y à %H:%M")
+        else:
+            last_update = "Inconnue"
+        
         start = convert_datetime(
             component.get("DTSTART").dt
         )
@@ -221,7 +240,7 @@ def parse_ical():
 
     print(f"✓ {len(events)} cours trouvés")
 
-    return events
+    return events, last_update
 
 
 # ============================================================
@@ -289,7 +308,7 @@ def assign_colors(events):
 # GENERATION HTML
 # ============================================================
 
-def generate_html(events, colors):
+def generate_html(events, colors, last_update):
 
     events_json = json.dumps(
         events,
@@ -855,6 +874,10 @@ def generate_html(events, colors):
 
         <div class="title">
             📅 Emploi du temps
+        </div>
+        
+        <div class="last-update">
+            Dernière mise à jour de l'EDT : {last_update}
         </div>
 
         <div class="controls">
@@ -1673,13 +1696,14 @@ def main():
 
     download_ical()
 
-    events = parse_ical()
+    events, last_update = parse_ical()
 
     colors = assign_colors(events)
 
     generate_html(
         events,
-        colors
+        colors,
+        last_update
     )
 
     print()
