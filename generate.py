@@ -15,7 +15,7 @@ from icalendar import Calendar
 ICAL_URL = "https://edt.univ-littoral.fr/jsp/custom/modules/plannings/9n9Rr7WP.shu"
 
 ICAL_FILE = Path("planning.shu")
-HTML_FILE = Path("index.html")
+HTML_FILE = Path("docs/index.html")
 COLORS_FILE = Path("colors.json")
 
 TIMEZONE = ZoneInfo("Europe/Paris")
