@@ -76,43 +76,6 @@ def clean_course_name(name):
 
     return name.strip()
 
-def extract_building(location):
-    """
-    Extrait le bâtiment depuis LOCATION.
-
-    Exemples :
-        "Bâtiment C - 108 SALLE INFO."
-        -> "Bâtiment C"
-
-        "Bâtiment A, 204"
-        -> "Bâtiment A"
-
-    Si aucun bâtiment n'est trouvé :
-        -> ""
-    """
-
-    if not location:
-        return ""
-
-    patterns = [
-        r"^(B[âa]timent\s+[^,-]+)",
-        r"^(Bat\.\s*[^,-]+)",
-        r"^(Bât\.\s*[^,-]+)",
-    ]
-
-    for pattern in patterns:
-
-        match = re.search(
-            pattern,
-            location,
-            re.IGNORECASE
-        )
-
-        if match:
-            return match.group(1).strip()
-
-    return ""
-
 
 def extract_teacher(description):
     """
@@ -236,8 +199,6 @@ def parse_ical():
         location = str(
             component.get("LOCATION", "")
         ).strip()
-        
-        building = extract_building(location)
 
         teacher = extract_teacher(description)
 
@@ -249,7 +210,6 @@ def parse_ical():
             "end": end.isoformat(),
             "name": name,
             "location": location,
-            "building": building,
             "teacher": teacher,
             "group": group,
             "description": description,
@@ -1405,15 +1365,6 @@ def generate_html(events, colors):
                 `
                 : ""
             }}
-            
-            ${{event.building
-                ? `
-                    <div class="event-location">
-                        🏢 ${{escapeHtml(event.building)}}
-                    </div>
-                `
-                : ""
-            }}
 
             ${{event.teacher
                 ? `
@@ -1487,23 +1438,6 @@ def generate_html(events, colors):
 
                         <div class="detail-value">
                             📍 ${{escapeHtml(event.location)}}
-                        </div>
-
-                    </div>
-                `
-                : ""
-            }}
-            
-            ${{event.building
-                ? `
-                    <div class="detail">
-
-                        <div class="detail-label">
-                            Bâtiment
-                        </div>
-
-                        <div class="detail-value">
-                            🏢 ${{escapeHtml(event.building)}}
                         </div>
 
                     </div>
