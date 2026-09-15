@@ -12,7 +12,7 @@ from icalendar import Calendar
 # CONFIGURATION
 # ============================================================
 
-ICAL_URL = "https://edt.univ-littoral.fr/jsp/custom/modules/plannings/9n9Rr7WP.shu"
+ICAL_URL = "https://edt.univ-littoral.fr/jsp/custom/modules/plannings/M3MP19WB.shu"
 
 ICAL_FILE = Path("planning.shu")
 HTML_FILE = Path("docs/index.html")
